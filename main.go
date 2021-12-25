@@ -5,18 +5,21 @@ import (
 	"fmt"
 	"image/color"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/canvas"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
 	a := app.New()
 	w := a.NewWindow("weather app ashish")
-	w.ShowAndRun()
-	res, err := http.Get("api.openweathermap.org/data/2.5/weather?q=noida&appid=298db86582882502da918878e7c10fa7")
+
+	res, err := http.Get("https://api.openweathermap.org/data/2.5/weather?q=noida&appid=298db86582882502da918878e7c10fa7")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -29,17 +32,33 @@ func main() {
 
 	weather, err := UnmarshalWeather(body)
 	if err != nil {
-		fmt.Println(weather)
+		fmt.Println(err)
 	}
 
-	image := canvas.NewImageFromFile("weatherImage.png")
+	image := canvas.NewImageFromFile("weather.png")
 	image.FillMode = canvas.ImageFillOriginal
-	label1 := canvas.SetText("Weather Details", color.Black)
+	label1 := canvas.NewText("Weather Details", color.Black)
 	label1.TextStyle = fyne.TextStyle{Bold: true}
-	label2 := canvas.SetText(fmt.Sprintf(" Country %s", weather.Sys.Country), color.Black)
-	label3 := canvas.SetText(fmt.Sprintf(" Country %s", weather.Sys.Country), color.Black)
-	label4 := canvas.SetText(fmt.Sprintf(" Country %s", weather.Sys.Country), color.Black)
-	label5 := canvas.SetText(fmt.Sprintf(" Country %s", weather.Sys.Country), color.Black)
+	combo := widget.NewSelect([]string{"noida", "chennai", "mumbai"}, func(value string) {
+		log.Println("Select set to", value)
+	})
+	label2 := canvas.NewText(fmt.Sprintf(" Country %s", weather.Sys.Country), color.Black)
+	label3 := canvas.NewText(fmt.Sprintf(" Temperature %2f", weather.Main.Temp), color.Black)
+	label4 := canvas.NewText(fmt.Sprintf(" WindSpeeed %.2f", weather.Wind.Speed), color.Black)
+	label5 := canvas.NewText(fmt.Sprintf(" Humidity %d", weather.Main.Humidity), color.Black)
+
+	w.SetContent(
+		container.NewVBox(
+			label1,
+			image,
+			combo,
+			label2,
+			label3,
+			label4,
+			label5,
+		),
+	)
+	w.ShowAndRun()
 }
 
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
