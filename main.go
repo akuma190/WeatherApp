@@ -19,7 +19,7 @@ func main() {
 	a := app.New()
 	w := a.NewWindow("weather app ashish")
 
-	res, err := http.Get("https://api.openweathermap.org/data/2.5/weather?q=noida&appid=298db86582882502da918878e7c10fa7")
+	res, err := http.Get("https://api.openweathermap.org/data/2.5/weather?q=noida")
 	if err != nil {
 		fmt.Println(err)
 	}
